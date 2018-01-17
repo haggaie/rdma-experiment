@@ -26,7 +26,7 @@ sudo apt-get install -y ifupdown
 
 # The RDMA stack and SoftRoCE require the generic kernel (not virtual kernel)
 sudo apt-get install -y linux-generic
-sudo apt-get autoremove --purge linux-virtual
+sudo apt-get autoremove -y --purge linux-virtual
 
 # install kmod from ppa to work around issue https://bugs.launchpad.net/ubuntu/+source/kmod/+bug/1693503
 sudo sudo apt-get install -y kmod
