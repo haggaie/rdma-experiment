@@ -21,6 +21,9 @@ sudo add-apt-repository ppa:linux-rdma/rdma-core-daily
 
 sudo apt-get update
 
+# install ifupdown for Vagrant
+sudo apt-get install -y ifupdown
+
 # The RDMA stack and SoftRoCE require the generic kernel (not virtual kernel)
 sudo apt-get install -y linux-generic
 sudo apt-get autoremove --purge linux-virtual
@@ -36,4 +39,4 @@ sudo apt-get install -y ibverbs-utils perftest
 
 # enable rxe
 sudo rxe_cfg start
-sudo rxe_cfg add enp0s3
+sudo rxe_cfg add enp0s8
