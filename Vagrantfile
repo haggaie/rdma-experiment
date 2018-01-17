@@ -68,4 +68,10 @@ Vagrant.configure("2") do |config|
   #   apt-get install -y apache2
   # SHELL
   config.vm.provision "shell", path: "soft-roce-install.sh"
+
+  # Two VMs: client & server
+  config.vm.define "client" do |client|
+  end
+  config.vm.define "server" do |server|
+  end
 end
