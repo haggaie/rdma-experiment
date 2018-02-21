@@ -14,8 +14,6 @@
 #     pkg-config \
 #     valgrind
 
-# install kmod from ppa to work around issue https://bugs.launchpad.net/ubuntu/+source/kmod/+bug/1693503
-sudo add-apt-repository ppa:bdrung/ppa
 # librxe is not inbox in Ubuntu yet
 sudo add-apt-repository ppa:linux-rdma/rdma-core-daily
 
@@ -28,7 +26,7 @@ sudo apt-get install -y ifupdown
 sudo apt-get install -y linux-generic
 sudo apt-get autoremove -y --purge linux-virtual
 
-# install kmod from ppa to work around issue https://bugs.launchpad.net/ubuntu/+source/kmod/+bug/1693503
+# install latest kmod since previous version conflicts with rdma-core
 sudo sudo apt-get install -y kmod
 
 # librxe is not inbox in Ubuntu yet
