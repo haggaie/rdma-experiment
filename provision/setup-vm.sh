@@ -1,5 +1,7 @@
 #!/bin/bash
 
+### Install Soft RoCE
+
 # # for building rdma-core
 # 
 # sudo apt-get update && sudo apt-get install -y \
@@ -36,5 +38,7 @@ sudo sudo apt-get install -y rdma-core
 sudo apt-get install -y ibverbs-utils perftest
 
 # enable rxe
+#sudo rxe_cfg add enp0s8
+mkdir -p /var/log/rxe
+echo enp0s8 > /var/log/rxe/rxe
 sudo rxe_cfg start
-sudo rxe_cfg add enp0s8
