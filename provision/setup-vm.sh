@@ -42,3 +42,6 @@ sudo apt-get install -y ibverbs-utils perftest
 mkdir -p /var/log/rxe
 echo enp0s8 > /var/log/rxe/rxe
 sudo rxe_cfg start
+
+### Install TCP benchmarking tools
+sudo apt-get install -y nuttcp
