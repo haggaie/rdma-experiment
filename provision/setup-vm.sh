@@ -18,6 +18,8 @@
 
 # librxe is not inbox in Ubuntu yet
 sudo add-apt-repository ppa:linux-rdma/rdma-core-daily
+# rdma-experiment ppa - sockperf
+sudo add-apt-repository ppa:haggai-eran/rdma-experiment
 
 sudo apt-get update
 
@@ -45,3 +47,6 @@ sudo rxe_cfg start
 
 ### Install TCP benchmarking tools
 sudo apt-get install -y nuttcp
+
+# sockperf - need to be pre-built or downloaded
+sudo apt-get install -y sockperf
