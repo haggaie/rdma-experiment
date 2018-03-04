@@ -41,13 +41,106 @@
 static const char *server = "127.0.0.1";
 static const char *port = "7471";
 
-#define NUM_MESSAGES 16
+#define NUM_MESSAGES 1
 
 static struct rdma_cm_id *id;
 static struct ibv_mr *mr, *send_mr;
 static int send_flags;
 static struct message send_msg[NUM_MESSAGES];
 static struct message recv_msg[NUM_MESSAGES];
+
+int generate_request()
+{
+	struct ibv_wc wc;
+	int ret;
+
+	printf("Enter next command:\n"
+	       "  %d - disconnect and quit\n"
+	       "  %d - set key value pair\n"
+	       "  %d - query the value of a given key\n",
+	       MSG_DISCONNECT, MSG_SET, MSG_QUERY);
+
+	struct message *msg = &send_msg[0];
+	scanf("%d", &msg->type);
+	switch (msg->type) {
+	case MSG_DISCONNECT:
+		break;
+	case MSG_SET:
+	case MSG_QUERY:
+		printf("Enter key:\n");
+		scanf("%d", &msg->key);
+		if (msg->type == MSG_SET) {
+			printf("Enter value:\n");
+			scanf("%d", &msg->value);
+		}
+		break;
+	default:
+		printf("Unknown type: %d\n", msg->type);
+		return -1;
+	}
+
+	ret = rdma_post_send(id, 0, msg, sizeof(*msg), send_mr, send_flags);
+	if (ret) {
+		perror("rdma_post_send");
+		return -1;
+	}
+
+	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
+	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
+		perror("rdma_get_send_comp");
+		return -1;
+	}
+
+	/* Terminate the program after sending the disconnect message. */
+	if (msg->type == MSG_DISCONNECT)
+		return -1;
+	return 0;
+}
+
+int handle_response()
+{
+	struct ibv_wc wc;
+	int ret;
+
+	while ((ret = rdma_get_recv_comp(id, &wc)) == 0);
+	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
+		perror("rdma_get_recv_comp");
+		return -1;
+	}
+
+	struct message *msg = &recv_msg[wc.wr_id];
+	switch (msg->type) {
+	case MSG_QUERY_RESP:
+		printf("Got query response: key=%d, value=%d\n", msg->key,
+		       msg->value);
+		break;
+	case MSG_SET_RESP:
+		printf("Got set response: key=%d, value=%d\n", msg->key,
+		       msg->value);
+		break;
+	default:
+		printf("Got unknown type: %d\n", msg->type);
+		return -1;
+	}
+
+	ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &recv_msg[wc.wr_id], sizeof(struct message), mr);
+	if (ret) {
+		perror("rdma_post_recv");
+		return -1;
+	}
+
+	return 0;
+}
+
+void main_loop()
+{
+	while (1) {
+		if (generate_request())
+			return;
+		if (handle_response())
+			return;
+	}
+}
 
 static int run(void)
 {
@@ -108,18 +201,7 @@ static int run(void)
 		goto out_dereg_send;
 	}
 
-	send_msg[0].type = MSG_DISCONNECT;
-	ret = rdma_post_send(id, 0, &send_msg[0], sizeof(struct message), mr, send_flags);
-	if (ret) {
-		perror("rdma_post_send");
-		goto out_disconnect;
-	}
-
-	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
-	if (ret < 0) {
-		perror("rdma_get_send_comp");
-		goto out_disconnect;
-	}
+	main_loop();
 
 out_disconnect:
 	rdma_disconnect(id);
