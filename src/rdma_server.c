@@ -37,13 +37,14 @@
 #include <rdma/rdma_verbs.h>
 
 #include "common.h"
+#include "database.h"
 
 static const char *port = "7471";
 
 #define NUM_MESSAGES 16
 
 static struct rdma_cm_id *listen_id, *id;
-static struct ibv_mr *mr;
+static struct ibv_mr *mr, *database_mr;
 static int send_flags;
 static struct message messages[NUM_MESSAGES];
 
@@ -70,6 +71,11 @@ int handle_message(struct ibv_wc* wc)
 		if (query_key(msg->key, &msg->value))
 			printf("Invalid key: %d\n", msg->key);
 		printf("Returning query response with value: %d\n", msg->value);
+		break;
+	case MSG_EXCHANGE_DATABASE_INFO:
+		msg->db_info.rkey = database_mr->rkey;
+		msg->db_info.num_keys = NUM_KEYS;
+		msg->db_info.address = (uintptr_t)table;
 		break;
 	deafult:
 		printf("Got invalid request type: %d\n", msg->type);
@@ -194,6 +200,15 @@ static int run(void)
 	if (ret)
 		goto out_dereg;
 
+	database_mr = ibv_reg_mr(id->pd, table, sizeof(table),
+				 IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE |
+				 IBV_ACCESS_LOCAL_WRITE);
+	if (!database_mr) {
+		ret = -1;
+		perror("ibv_reg_mr");
+		goto out_dereg;
+	}
+
 	ret = rdma_accept(id, NULL);
 	if (ret) {
 		perror("rdma_accept");
@@ -205,6 +220,8 @@ static int run(void)
 out_disconnect:
 	rdma_disconnect(id);
 out_dereg:
+	if (database_mr)
+		rdma_dereg_mr(database_mr);
 	rdma_dereg_mr(mr);
 out_destroy_accept_ep:
 	rdma_destroy_ep(id);

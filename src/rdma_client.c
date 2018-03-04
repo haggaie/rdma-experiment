@@ -48,6 +48,25 @@ static struct ibv_mr *mr, *send_mr;
 static int send_flags;
 static struct message send_msg[NUM_MESSAGES];
 static struct message recv_msg[NUM_MESSAGES];
+static struct database_info db_info;
+
+int transmit_message(struct message *msg)
+{
+	struct ibv_wc wc;
+	int ret;
+
+	ret = rdma_post_send(id, 0, msg, sizeof(*msg), send_mr, send_flags);
+	if (ret) {
+		perror("rdma_post_send");
+		return -1;
+	}
+
+	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
+	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
+		perror("rdma_get_send_comp");
+		return -1;
+	}
+}
 
 int generate_request()
 {
@@ -79,17 +98,8 @@ int generate_request()
 		return -1;
 	}
 
-	ret = rdma_post_send(id, 0, msg, sizeof(*msg), send_mr, send_flags);
-	if (ret) {
-		perror("rdma_post_send");
+	if (transmit_message(msg))
 		return -1;
-	}
-
-	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
-	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
-		perror("rdma_get_send_comp");
-		return -1;
-	}
 
 	/* Terminate the program after sending the disconnect message. */
 	if (msg->type == MSG_DISCONNECT)
@@ -118,6 +128,9 @@ int handle_response()
 		printf("Got set response: key=%d, value=%d\n", msg->key,
 		       msg->value);
 		break;
+	case MSG_EXCHANGE_DATABASE_INFO:
+		db_info = msg->db_info;
+		break;
 	default:
 		printf("Got unknown type: %d\n", msg->type);
 		return -1;
@@ -142,6 +155,19 @@ void main_loop()
 	}
 }
 
+int get_db_info()
+{
+	struct message *msg = &send_msg[0];
+	msg->type = MSG_EXCHANGE_DATABASE_INFO;
+
+	if (transmit_message(msg))
+		return -1;
+
+	if (handle_response())
+		return -1;
+
+	return 0;
+}
 static int run(void)
 {
 	struct rdma_addrinfo hints, *res;
@@ -200,6 +226,10 @@ static int run(void)
 		perror("rdma_connect");
 		goto out_dereg_send;
 	}
+
+	ret = get_db_info();
+	if (ret)
+		goto out_dereg_send;
 
 	main_loop();
 
