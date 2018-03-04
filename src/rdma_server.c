@@ -60,13 +60,16 @@ int handle_message(struct ibv_wc* wc)
 		printf("Got SET request with key %d and value %d\n",
 		       msg->key, msg->value);
 		msg->type = MSG_SET_RESP;
-		/* TODO write to database */
+		if (set_key_value(msg->key, msg->value))
+			printf("Invalid key: %d\n", msg->key);
 		break;
 	case MSG_QUERY:
 		printf("Got QUERY request with key %d\n",
 		       msg->key);
 		msg->type = MSG_QUERY_RESP;
-		msg->value = -1; /* TODO implement database */
+		if (query_key(msg->key, &msg->value))
+			printf("Invalid key: %d\n", msg->key);
+		printf("Returning query response with value: %d\n", msg->value);
 		break;
 	deafult:
 		printf("Got invalid request type: %d\n", msg->type);

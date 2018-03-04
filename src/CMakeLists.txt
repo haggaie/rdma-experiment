@@ -14,4 +14,4 @@ link_libraries(rdmacm ibverbs common)
 add_executable(rdma_client rdma_client.c)
 
 # Target to build the server program
-add_executable(rdma_server rdma_server.c)
+add_executable(rdma_server rdma_server.c database.c)
