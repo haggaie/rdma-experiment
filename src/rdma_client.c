@@ -27,6 +27,8 @@
  * SOFTWARE.
  */
 
+#include "common.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -39,11 +41,13 @@
 static const char *server = "127.0.0.1";
 static const char *port = "7471";
 
+#define NUM_MESSAGES 16
+
 static struct rdma_cm_id *id;
 static struct ibv_mr *mr, *send_mr;
 static int send_flags;
-static uint8_t send_msg[16];
-static uint8_t recv_msg[16];
+static struct message send_msg[NUM_MESSAGES];
+static struct message recv_msg[NUM_MESSAGES];
 
 static int run(void)
 {
@@ -61,7 +65,7 @@ static int run(void)
 	}
 
 	memset(&attr, 0, sizeof attr);
-	attr.cap.max_send_wr = attr.cap.max_recv_wr = 1;
+	attr.cap.max_send_wr = attr.cap.max_recv_wr = NUM_MESSAGES;
 	attr.cap.max_send_sge = attr.cap.max_recv_sge = 1;
 	attr.cap.max_inline_data = 16;
 	attr.qp_context = id;
@@ -79,14 +83,14 @@ static int run(void)
 		goto out_free_addrinfo;
 	}
 
-	mr = rdma_reg_msgs(id, recv_msg, 16);
+	mr = rdma_reg_msgs(id, recv_msg, sizeof(recv_msg));
 	if (!mr) {
 		perror("rdma_reg_msgs for recv_msg");
 		ret = -1;
 		goto out_destroy_ep;
 	}
 	if ((send_flags & IBV_SEND_INLINE) == 0) {
-		send_mr = rdma_reg_msgs(id, send_msg, 16);
+		send_mr = rdma_reg_msgs(id, send_msg, sizeof(send_msg));
 		if (!send_mr) {
 			perror("rdma_reg_msgs for send_msg");
 			ret = -1;
@@ -94,11 +98,9 @@ static int run(void)
 		}
 	}
 
-	ret = rdma_post_recv(id, NULL, recv_msg, 16, mr);
-	if (ret) {
-		perror("rdma_post_recv");
+	ret = post_recv_all(id, mr, recv_msg, NUM_MESSAGES);
+	if (ret)
 		goto out_dereg_send;
-	}
 
 	ret = rdma_connect(id, NULL);
 	if (ret) {
@@ -106,7 +108,8 @@ static int run(void)
 		goto out_dereg_send;
 	}
 
-	ret = rdma_post_send(id, NULL, send_msg, 16, send_mr, send_flags);
+	send_msg[0].type = MSG_DISCONNECT;
+	ret = rdma_post_send(id, 0, &send_msg[0], sizeof(struct message), mr, send_flags);
 	if (ret) {
 		perror("rdma_post_send");
 		goto out_disconnect;
@@ -117,12 +120,6 @@ static int run(void)
 		perror("rdma_get_send_comp");
 		goto out_disconnect;
 	}
-
-	while ((ret = rdma_get_recv_comp(id, &wc)) == 0);
-	if (ret < 0)
-		perror("rdma_get_recv_comp");
-	else
-		ret = 0;
 
 out_disconnect:
 	rdma_disconnect(id);

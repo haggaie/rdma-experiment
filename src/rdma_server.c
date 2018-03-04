@@ -36,21 +36,103 @@
 #include <rdma/rdma_cma.h>
 #include <rdma/rdma_verbs.h>
 
+#include "common.h"
+
 static const char *port = "7471";
 
+#define NUM_MESSAGES 16
+
 static struct rdma_cm_id *listen_id, *id;
-static struct ibv_mr *mr, *send_mr;
+static struct ibv_mr *mr;
 static int send_flags;
-static uint8_t send_msg[16];
-static uint8_t recv_msg[16];
+static struct message messages[NUM_MESSAGES];
+
+int handle_message(struct ibv_wc* wc)
+{
+	struct message *msg = &messages[wc->wr_id];
+	int ret;
+
+	switch (msg->type)
+	{
+	case MSG_DISCONNECT:
+		return -1; /* Tell main loop to disconnect */
+	case MSG_SET:
+		printf("Got SET request with key %d and value %d\n",
+		       msg->key, msg->value);
+		msg->type = MSG_SET_RESP;
+		/* TODO write to database */
+		break;
+	case MSG_QUERY:
+		printf("Got QUERY request with key %d\n",
+		       msg->key);
+		msg->type = MSG_QUERY_RESP;
+		msg->value = -1; /* TODO implement database */
+		break;
+	deafult:
+		printf("Got invalid request type: %d\n", msg->type);
+		return -1;
+	}
+
+	ret = rdma_post_send(id, (void *)(uintptr_t)wc->wr_id, msg, sizeof(*msg), mr, send_flags);
+	if (ret) {
+		perror("rdma_post_send");
+		return -1;
+	}
+}
+
+void main_loop()
+{
+	struct ibv_wc wc;
+	int ret;
+
+	while (1) {
+		/* Check for newly received messages */
+		ret = rdma_get_recv_comp(id, &wc);
+		if (ret < 0) {
+			perror("rdma_get_recv_comp");
+			return;
+		} else if (ret > 0) {
+			if (wc.status != IBV_WC_SUCCESS) {
+				printf("error: got recieve completion with status code: %d\n", wc.status);
+				return;
+			}
+			if (wc.byte_len != sizeof(struct message)) {
+				printf("error: got recieve completion length not matching the expected message length.\n");
+				return;
+			}
+			/* Got a message */
+			ret = handle_message(&wc);
+			if (ret)
+				/* Got disconnect message */
+				return;
+		}
+
+		/* Check for completed send operations */
+		ret = rdma_get_send_comp(id, &wc);
+		if (ret < 0)
+			perror("rdma_get_send_comp");
+		else if (ret > 0) {
+			if (wc.status != IBV_WC_SUCCESS) {
+				printf("error: got send completion with status code: %d\n", wc.status);
+				return;
+			}
+
+			/* Reuse the buffer for the next receive operation */
+			ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &messages[wc.wr_id], sizeof(struct message), mr);
+			if (ret) {
+				perror("rdma_post_recv");
+				return;
+			}
+		}
+	}
+}
 
 static int run(void)
 {
 	struct rdma_addrinfo hints, *res;
 	struct ibv_qp_init_attr init_attr;
 	struct ibv_qp_attr qp_attr;
-	struct ibv_wc wc;
-	int ret;
+	int ret, i;
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_flags = RAI_PASSIVE;
@@ -62,7 +144,7 @@ static int run(void)
 	}
 
 	memset(&init_attr, 0, sizeof init_attr);
-	init_attr.cap.max_send_wr = init_attr.cap.max_recv_wr = 1;
+	init_attr.cap.max_send_wr = init_attr.cap.max_recv_wr = NUM_MESSAGES;
 	init_attr.cap.max_send_sge = init_attr.cap.max_recv_sge = 1;
 	init_attr.cap.max_inline_data = 16;
 	init_attr.sq_sig_all = 1;
@@ -98,57 +180,28 @@ static int run(void)
 		printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
 		       "using sge sends\n");
 
-	mr = rdma_reg_msgs(id, recv_msg, 16);
+	mr = rdma_reg_msgs(id, messages, sizeof(messages));
 	if (!mr) {
 		ret = -1;
-		perror("rdma_reg_msgs for recv_msg");
+		perror("rdma_reg_msgs");
 		goto out_destroy_accept_ep;
 	}
-	if ((send_flags & IBV_SEND_INLINE) == 0) {
-		send_mr = rdma_reg_msgs(id, send_msg, 16);
-		if (!send_mr) {
-			ret = -1;
-			perror("rdma_reg_msgs for send_msg");
-			goto out_dereg_recv;
-		}
-	}
 
-	ret = rdma_post_recv(id, NULL, recv_msg, 16, mr);
-	if (ret) {
-		perror("rdma_post_recv");
-		goto out_dereg_send;
-	}
+	ret = post_recv_all(id, mr, messages, NUM_MESSAGES);
+	if (ret)
+		goto out_dereg;
 
 	ret = rdma_accept(id, NULL);
 	if (ret) {
 		perror("rdma_accept");
-		goto out_dereg_send;
+		goto out_dereg;
 	}
 
-	while ((ret = rdma_get_recv_comp(id, &wc)) == 0);
-	if (ret < 0) {
-		perror("rdma_get_recv_comp");
-		goto out_disconnect;
-	}
-
-	ret = rdma_post_send(id, NULL, send_msg, 16, send_mr, send_flags);
-	if (ret) {
-		perror("rdma_post_send");
-		goto out_disconnect;
-	}
-
-	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
-	if (ret < 0)
-		perror("rdma_get_send_comp");
-	else
-		ret = 0;
+	main_loop();
 
 out_disconnect:
 	rdma_disconnect(id);
-out_dereg_send:
-	if ((send_flags & IBV_SEND_INLINE) == 0)
-		rdma_dereg_mr(send_mr);
-out_dereg_recv:
+out_dereg:
 	rdma_dereg_mr(mr);
 out_destroy_accept_ep:
 	rdma_destroy_ep(id);
