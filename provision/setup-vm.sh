@@ -45,8 +45,5 @@ mkdir -p /var/lib/rxe
 echo enp0s8 > /var/lib/rxe/rxe
 sudo rxe_cfg start
 
-### Install TCP benchmarking tools
-sudo apt-get install -y nuttcp
-
 # sockperf - need to be pre-built or downloaded
 sudo apt-get install -y sockperf
