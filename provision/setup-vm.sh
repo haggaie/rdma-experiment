@@ -41,8 +41,8 @@ sudo apt-get install -y ibverbs-utils perftest
 
 # enable rxe
 #sudo rxe_cfg add enp0s8
-mkdir -p /var/log/rxe
-echo enp0s8 > /var/log/rxe/rxe
+mkdir -p /var/lib/rxe
+echo enp0s8 > /var/lib/rxe/rxe
 sudo rxe_cfg start
 
 ### Install TCP benchmarking tools
