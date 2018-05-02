@@ -47,3 +47,6 @@ sudo rxe_cfg start
 
 # sockperf - need to be pre-built or downloaded
 sudo apt-get install -y sockperf
+
+# RDMA coding exercise dependencies
+sudo apt-get install -y build-essential cmake librdmacm-dev
