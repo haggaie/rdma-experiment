@@ -45,7 +45,7 @@ static const char *port = "7471";
 
 static struct rdma_cm_id *id;
 static struct ibv_mr *mr, *send_mr;
-static int send_flags;
+static int send_flags = 0;
 static struct message send_msg[NUM_MESSAGES];
 static struct message recv_msg[NUM_MESSAGES];
 static struct database_info db_info;
@@ -190,13 +190,6 @@ static int run(void)
 	attr.qp_context = id;
 	attr.sq_sig_all = 1;
 	ret = rdma_create_ep(&id, res, NULL, &attr);
-	// Check to see if we got inline data allowed or not
-	if (attr.cap.max_inline_data >= 16)
-		send_flags = IBV_SEND_INLINE;
-	else
-		printf("rdma_client: device doesn't support IBV_SEND_INLINE, "
-		       "using sge sends\n");
-
 	if (ret) {
 		perror("rdma_create_ep");
 		goto out_free_addrinfo;
@@ -252,7 +245,7 @@ int main(int argc, char **argv)
 {
 	int op, ret;
 
-	while ((op = getopt(argc, argv, "s:p:")) != -1) {
+	while ((op = getopt(argc, argv, "s:p:i")) != -1) {
 		switch (op) {
 		case 's':
 			server = optarg;
@@ -260,10 +253,14 @@ int main(int argc, char **argv)
 		case 'p':
 			port = optarg;
 			break;
+		case 'i':
+			send_flags = IBV_SEND_INLINE;
+			break;
 		default:
 			printf("usage: %s\n", argv[0]);
 			printf("\t[-s server_address]\n");
 			printf("\t[-p port_number]\n");
+			printf("\t[-i inline transmission]\n");
 			exit(1);
 		}
 	}

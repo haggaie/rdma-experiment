@@ -45,7 +45,7 @@ static const char *port = "7471";
 
 static struct rdma_cm_id *listen_id, *id;
 static struct ibv_mr *mr, *database_mr;
-static int send_flags;
+static int send_flags = 0;
 static struct message messages[NUM_MESSAGES];
 
 int handle_message(struct ibv_wc* wc)
@@ -183,11 +183,6 @@ static int run(void)
 		perror("ibv_query_qp");
 		goto out_destroy_accept_ep;
 	}
-	if (init_attr.cap.max_inline_data >= 16)
-		send_flags = IBV_SEND_INLINE;
-	else
-		printf("rdma_server: device doesn't support IBV_SEND_INLINE, "
-		       "using sge sends\n");
 
 	mr = rdma_reg_msgs(id, messages, sizeof(messages));
 	if (!mr) {
@@ -236,14 +231,18 @@ int main(int argc, char **argv)
 {
 	int op, ret;
 
-	while ((op = getopt(argc, argv, "p:")) != -1) {
+	while ((op = getopt(argc, argv, "p:i")) != -1) {
 		switch (op) {
 		case 'p':
 			port = optarg;
 			break;
+		case 'i':
+			send_flags = IBV_SEND_INLINE;
+			break;
 		default:
 			printf("usage: %s\n", argv[0]);
 			printf("\t[-p port_number]\n");
+			printf("\t[-i inline transmission]\n");
 			exit(1);
 		}
 	}
