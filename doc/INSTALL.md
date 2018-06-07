@@ -38,4 +38,8 @@
 
 -   librdmacm
 
+-   librdmacm-dev
+
+-   cmake
+
 
