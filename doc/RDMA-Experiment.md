@@ -273,7 +273,7 @@ System Monitor.
 הרשת, עלינו לקבל הרשאה של משתמש-על באמצעות הפקודה sudo. לסיכום על מנת
 להפעיל את sockperf נשתמש בפקודה:
 
-    sudo env LD\_PRELOAD=libvma.so sockperf …
+    sudo env LD_PRELOAD=libvma.so sockperf …
 
 השתמשו ב-VMA בצד השרת ובצד הלקוח. מדדו קצב ההעברה ואת השהיית הרשת תוך
 שימוש בספריית VMA. מדדו גם את ניצולת המעבד. השוו את התוצאות והסבירו את
@@ -286,9 +286,11 @@ System Monitor.
 ו-performance. במכונות הניסוי, תדר השעון כמעט נחלק לשניים במעבר למצב
 powersave. כדי להחליף לכל הליבות את התדר השתמשו בפקודה:
 
-    for core in \$(seq 0 3) ; do cpufreq-set -g &lt;governor&gt; ; done
+    for core in $(seq 0 3) ; do sudo cpufreq-set -c $core -g $governor ; done
 
-כאשר מחליפים את &lt;governor&gt; ב-powersave או performance לפי הצורך.
+כאשר מחליפים את
+&lrm;`$governor`
+ב-`powersave` או `performance` לפי הצורך.
 
 מדדו את קצב השליחה בתדר שעון נמוך ובתדר גבוה והשווה את התוצאות כאשר
 משתמשים ב-VMA וכאשר משתמשים בליבת מערכת ההפעלה.
