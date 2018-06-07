@@ -203,10 +203,15 @@ RDMA](https://www.mellanox.com/related-docs/prod_software/RDMA_Aware_Programming
 הלקוח
 &lrm;`$client_ip`.
 
-תוכלו להגדיר את כתובות ה-ip כמשתני סביבה כדי להקל על הקלדתם. לדוגמה:
+תוכלו להגדיר את שם הכרטיס וכתובות ה-ip כמשתני סביבה כדי להקל על הקלדתם. לדוגמה:
 
+    dev=eth2
     server_ip=192.168.0.101
     client_ip=192.168.0.102
+
+בדקו את מהירות כרטיס הרשת שמצאתם באמצעות הפקודה:
+
+    ethtool $dev
 
 ### ריבוי ליבות
 
