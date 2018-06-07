@@ -33,11 +33,9 @@
 
 -   ניסויים
 
-    -   מדידת latency, bandwidth עבור גדלי הודעות שונים, עבור TCP (עם
-        VMA או בלעדיו) ו-RC
+    -   מדידת latency, bandwidth עבור גדלי הודעות שונים, עבור TCP (עם VMA או בלעדיו) ו-RC
 
-    -   עבור גודל מסוים, השוואת ניצול המעבד בצד השולח והמקבל, בין
-        sockperf עם VMA ובלעדיו, ונבחן את ההשפעה של הורדת תדר השעון של
+    -   עבור גודל מסוים, השוואת ניצול המעבד בצד השולח והמקבל, בין sockperf עם VMA ובלעדיו, ונבחן את ההשפעה של הורדת תדר השעון של
         המעבד על קצב התקשורת.
 
     -   עם / בלי TSO
@@ -47,8 +45,7 @@
     -   ריבוי ליבות: שימוש ב-affinity כדי להצמיד חוטי לקוח ושרת לליבות
         מתאימות ומדידת throughput ו-latency כולל.
 
-    -   עבודה עם polling מול interrupts. מדידת latency באמצעות
-        ib\_send\_lat.
+    -   עבודה עם polling מול interrupts. מדידת latency באמצעות ib\_send\_lat.
 
 תיאור תמציתי של הניסוי
 ----------------------
@@ -67,7 +64,7 @@
 ### מעקף ליבת מערכת ההפעלה
 
 מערכות הפעלה על פי רוב לוקחות על עצמן את מימוש פרוטוקולי התקשורת של
-שכבות הרשת (IP) וה-Transport (TCP), ומציגות בפני תוכניות משתמש ממשק
+שכבות הרשת (IP) וה-Transport ‏(TCP), ומציגות בפני תוכניות משתמש ממשק
 מופשט של תקשורת (sockets). מערכת ההפעלה היא היחידה בעלת הגישה לכרטיס
 הרשת, ולכן תפקיד נוסף שלה היא לסווג את החבילות המתקבלות ולשייך אותן
 לתוכנית המשתמש המתאימה.
@@ -130,7 +127,7 @@ RoCE מאפשר לתוכנית המשתמש לספק הודעות גדולות �
 
 מידע נוסף על כלי המדידה אשר בשימוש בניסוי ניתן למצוא במקורות הבאים:
 
--   המדריך למשתמש של sockperf: [sockperf man
+-   המדריך למשתמש של sockperf:‏ [sockperf man
     page](https://www.mankier.com/3/sockperf)
 
 -   כלי cpufrequtils לשליטה בתדר השעון של המעבד: [man
@@ -190,7 +187,7 @@ RDMA](https://www.mellanox.com/related-docs/prod_software/RDMA_Aware_Programming
 במחשב מספר כרטיסי רשת. ניתן לזהות אותם באמצעות הפקודה ip link show. רק
 שניים מהם תומכים ב-RDMA ובאחד מהם נשתמש בניסוי. מצאו מהם באמצעות הפקודה:
 
-ls /sys/class/infiniband\_verbs/uverbs0/device/net/
+    ls /sys/class/infiniband\_verbs/uverbs0/device/net/
 
 אלו שני פורטים של כרטיס רשת יחד התומך ב-RDMA. רק אחד מהם מחובר לשרת
 השני. מצאו את הפורט המחובר באמצעות הסתכלות בפלט של ip link show – הפורט
@@ -200,7 +197,7 @@ ls /sys/class/infiniband\_verbs/uverbs0/device/net/
 
 נסמן את כרטיס הרשת כ-‎\$dev. מצאו את כתובת ה-IP של כרטיס זה באמצעות
 הפקודה ip addr show \$dev. נסמן את כתובת ה-IP של השרת ‎server\_ip\$ ושל
-הלקוח \$client\_ip.
+הלקוח ‎\$client\_ip.
 
 ### ריבוי ליבות
 
@@ -211,7 +208,7 @@ ls /sys/class/infiniband\_verbs/uverbs0/device/net/
 שעליה יש להריץ את התוכנית המבוקשת. כך למשל על מנת להריץ את ib\_send\_bw
 על ליבה מספר 3, נפעיל את הפקודה:
 
-taskset -c 3 ib\_send\_bw …
+    taskset -c 3 ib\_send\_bw …
 
 ### חיבור מרוחק
 
@@ -219,7 +216,7 @@ taskset -c 3 ib\_send\_bw …
 אחת המכונות אל השניה בחיבור מרוחק ssh המאפשר שימוש בשורת הפקודה של
 המכונה המרוחקת:
 
-ssh &lt;hostname / ip address&gt;
+    ssh <hostname / ip address>
 
 מומלץ לפתוח שני חלונות מסוף: אחד עבור המכונה המקומית, ואחד עבור המכונה
 המרוחקת.
@@ -229,13 +226,13 @@ ssh &lt;hostname / ip address&gt;
 בחלק זה של הניסוי נשתמש בכדי למדידת ביצועים של פרוטוקול TCP בשם
 sockperf. בצד השרת הפקודה המתאימה היא:
 
-sockperf server --tcp
+    sockperf server --tcp
 
 בצד הלקוח הפעילו את sockperf למדידת קצב העברת הנתונים באמצעות בדיקת
 throughput של sockperf. במצב זה התוכנית מנסה לשלוח את המספר המירבי של
 בתים לצד השני עד לגודל חלון ה-TCP. הפעילו את הפקודה:
 
-sockperf throughput --tcp -i \$server\_ip --msg-size 1472 -t 5
+    sockperf throughput --tcp -i \$server\_ip --msg-size 1472 -t 5
 
 אנו משתמשים בגודל הודעה מקסימלי (1472) על מנת לקבל קצב העברה גבוה יותר
 ולהפחית היחס בין כמות העבודה הנדרשת מן המעבד למספר הבתים המועברים. ניתן
@@ -262,7 +259,7 @@ System Monitor.
 הרשת, עלינו לקבל הרשאה של משתמש-על באמצעות הפקודה sudo. לסיכום על מנת
 להפעיל את sockperf נשתמש בפקודה:
 
-sudo env LD\_PRELOAD=libvma.so sockperf …
+    sudo env LD\_PRELOAD=libvma.so sockperf …
 
 השתמשו ב-VMA בצד השרת ובצד הלקוח. מדדו קצב ההעברה ואת השהיית הרשת תוך
 שימוש בספריית VMA. מדדו גם את ניצולת המעבד. השוו את התוצאות והסבירו את
@@ -275,7 +272,7 @@ sudo env LD\_PRELOAD=libvma.so sockperf …
 ו-performance. במכונות הניסוי, תדר השעון כמעט נחלק לשניים במעבר למצב
 powersave. כדי להחליף לכל הליבות את התדר השתמשו בפקודה:
 
-for core in \$(seq 0 3) ; do cpufreq-set -g &lt;governor&gt; ; done
+    for core in \$(seq 0 3) ; do cpufreq-set -g &lt;governor&gt; ; done
 
 כאשר מחליפים את &lt;governor&gt; ב-powersave או performance לפי הצורך.
 
@@ -293,11 +290,11 @@ for core in \$(seq 0 3) ; do cpufreq-set -g &lt;governor&gt; ; done
 למדידת קצב העברה נשתמש בכלי ib\_send\_bw. על השרת, נפעיל את הכלי ללא
 פרמטרים נוספים:
 
-ib\_send\_bw
+    ib\_send\_bw
 
 בצד הלקוח (השולח), נפעיל את הכלי עם כתובת השרת כפרמטר:
 
-ib\_send\_bw \$server\_ip
+    ib\_send\_bw \$server\_ip
 
 ניתן לשלוט במשך הניסוי באמצעות הפרמטר -D. יש להעביר את אותו משך הזמן גם
 לשרת וגם ללקוח אחרת יתקבלו תוצאות שגויות.
@@ -332,8 +329,9 @@ perftest.
 מאורגנים.
 
 בניסוי הבא נפעיל מספר תוכניות במקביל. ניתן לעשות זאת באמצעות פתיחה של
-מספר לשוניות במסוף (צירוף המקשים Ctrl-Shift-T). תוכלו לפתוח מספר לשוניות
-גם עבור התחנה המרוחקת, ולהשתמש בכלי ssh כדי לפתוח מספר חיבורים מקבילים
+מספר לשוניות במסוף (צירוף המקשים 
+&lrm;<kbd>Ctrl</kbd> + <kbd>Shift</kbd>+<kbd>T</kbd>)&lrm;.
+תוכלו לפתוח מספר לשוניות גם עבור התחנה המרוחקת, ולהשתמש בכלי ssh כדי לפתוח מספר חיבורים מקבילים
 לאותה תחנה.
 
 הפעילו תהליך נפרד של ib\_send\_bw על כל אחת מהליבות בשרת (באמצעות
@@ -353,7 +351,7 @@ taskset). כדי למנוע התנגשויות בבחירת פורט הגישה 
 בחלק זה של הניסוי נתנסה בתכנות RDMA בשפת C באמצעות הספריה librdmacm.
 הורידו את קוד הדוגמה שממנו נתחיל באמצעות הפקודה:
 
-git clone <https://github.com/haggaie/rdma-experiment.git>
+    git clone https://github.com/haggaie/rdma-experiment.git
 
 הפעולה תעתיק את הקבצים לתיקיה rdma-experiment/src. תוכנית הדוגמה היא שרת
 מסד נתונים מפושט. מסד הנתונים מצמיד ערכים למפתחות, ומאפשר שליפה של ערך
@@ -366,14 +364,14 @@ rdma-experiment/src. לאחר מכן התוכניות המוכנות צריכו�
 rdma-experiment/src/build. כדי להפעיל את התוכניות, הפעילו את תוכנית השרת
 על מחשב השרת
 
-rdma\_server \[-p port\_number\]
+    rdma_server [-p port_number]
 
 ניתן לבחור מספר פורט שונה באמצעות הפרמטר -p, למשל אם חולקים את השרת עם
 מספר משתמשים.
 
 את תוכנית הלקוח יש להפעיל עם כתובת ה-IP של השרת:
 
-rdma\_client -s \$server\_ip \[-p port\_number\]
+    rdma_client -s $server_ip [-p port_number]
 
 תוכנית הלקוח מבקשת קלט מהמשתמש בצורה מחזורית. בכל פעם יש לבחור את סוג
 ההודעה – כתיבה למסד הנתונים, קריאה מתוכו, או סיום הריצה. אם המשתמש מבקש
@@ -439,35 +437,32 @@ vagrant ssh server.
 בעת העבודה עם SoftRoCE (בעבודת ההכנה בבית) יש להפעיל את RoCE לאחר כל
 הפעלה מחדש של המכונה באמצעות הפקודה:
 
-sudo rxe\_cfg start
+    sudo rxe_cfg start
 
 נספח ב' – התקנה עם ConnectX-3
 =============================
 
 על מנת ש-VMA יפעל יש להוסיף את השורה:
 
-options mlx4\_core log\_num\_mgm\_entry\_size=-1
+    options mlx4_core log_num_mgm_entry_size=-1
 
-לקובץ /etc/modprobe.d/mlx4.conf
+לקובץ
+&lrm;/etc/modprobe.d/mlx4.conf
 
 ולהפעיל את הפקודה:
 
-update-initramfs
+    update-initramfs
 
 יש להוסיף את המודולים הבאים לרשימת המודולים הנטענים עם עליית המערכת
-בקובץ:
+בקובץ
 
-/etc/modules-load.d/rdma.conf:
+&lrm;/etc/modules-load.d/rdma.conf:
 
-> mlx4\_core
->
-> mlx4\_ib
->
-> mlx4\_en
->
-> ib\_uverbs
->
-> rdma\_ucm
+    mlx4_core
+    mlx4_ib
+    mlx4_en
+    ib_uverbs
+    rdma_ucm
 
 חבילות נדרשות לניסוי:
 
