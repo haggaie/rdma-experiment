@@ -1,2 +1,4 @@
-RDMA-Experiment.html: RDMA-Experiment.md markdown.css
+all: RDMA-Experiment.html INSTALL.html
+
+%.html: %.md markdown.css
 	pandoc $< -s --css markdown.css -o $@
