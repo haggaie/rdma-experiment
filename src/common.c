@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "common.h"
 
 int post_recv_all(struct rdma_cm_id *id, struct ibv_mr *mr,
