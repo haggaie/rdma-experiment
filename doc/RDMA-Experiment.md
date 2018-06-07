@@ -198,8 +198,15 @@ RDMA](https://www.mellanox.com/related-docs/prod_software/RDMA_Aware_Programming
 במכונות של הניסוי יופיע הכרטיס כ-eth2.
 
 נסמן את כרטיס הרשת כ-‎\$dev. מצאו את כתובת ה-IP של כרטיס זה באמצעות
-הפקודה ip addr show \$dev. נסמן את כתובת ה-IP של השרת ‎server\_ip\$ ושל
-הלקוח ‎\$client\_ip.
+הפקודה ip addr show \$dev. נסמן את כתובת ה-IP של השרת
+&lrm;`$server_ip`
+הלקוח
+&lrm;`$client_ip`.
+
+תוכלו להגדיר את כתובות ה-ip כמשתני סביבה כדי להקל על הקלדתם. לדוגמה:
+
+    server_ip=192.168.0.101
+    client_ip=192.168.0.102
 
 ### ריבוי ליבות
 
