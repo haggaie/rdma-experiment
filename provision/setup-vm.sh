@@ -1,5 +1,7 @@
 #!/bin/bash
 
+### Install Soft RoCE
+
 # # for building rdma-core
 # 
 # sudo apt-get update && sudo apt-get install -y \
@@ -14,10 +16,10 @@
 #     pkg-config \
 #     valgrind
 
-# install kmod from ppa to work around issue https://bugs.launchpad.net/ubuntu/+source/kmod/+bug/1693503
-sudo add-apt-repository ppa:bdrung/ppa
 # librxe is not inbox in Ubuntu yet
 sudo add-apt-repository ppa:linux-rdma/rdma-core-daily
+# rdma-experiment ppa - sockperf
+sudo add-apt-repository ppa:haggai-eran/rdma-experiment
 
 sudo apt-get update
 
@@ -28,7 +30,7 @@ sudo apt-get install -y ifupdown
 sudo apt-get install -y linux-generic
 sudo apt-get autoremove -y --purge linux-virtual
 
-# install kmod from ppa to work around issue https://bugs.launchpad.net/ubuntu/+source/kmod/+bug/1693503
+# install latest kmod since previous version conflicts with rdma-core
 sudo sudo apt-get install -y kmod
 
 # librxe is not inbox in Ubuntu yet
@@ -38,5 +40,13 @@ sudo sudo apt-get install -y rdma-core
 sudo apt-get install -y ibverbs-utils perftest
 
 # enable rxe
+#sudo rxe_cfg add enp0s8
+mkdir -p /var/lib/rxe
+echo enp0s8 > /var/lib/rxe/rxe
 sudo rxe_cfg start
-sudo rxe_cfg add enp0s8
+
+# sockperf - need to be pre-built or downloaded
+sudo apt-get install -y sockperf
+
+# RDMA coding exercise dependencies
+sudo apt-get install -y build-essential cmake librdmacm-dev
