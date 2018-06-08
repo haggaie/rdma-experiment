@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="markdown.css" type="text/css" />
+</head>
+<body>
+<h1 id="התקנה-עם-connectx-3">התקנה עם ConnectX-3</h1>
+<p>על מנת ש-VMA יפעל יש להוסיף את השורה:</p>
+<pre><code>options mlx4_core log_num_mgm_entry_size=-1</code></pre>
+<p>לקובץ ‎/etc/modprobe.d/mlx4.conf</p>
+<p>ולהפעיל את הפקודה:</p>
+<pre><code>update-initramfs</code></pre>
+<p>יש להוסיף את המודולים הבאים לרשימת המודולים הנטענים עם עליית המערכת בקובץ</p>
+<p>‎/etc/modules-load.d/rdma.conf:</p>
+<pre><code>mlx4_core
+mlx4_ib
+mlx4_en
+ib_uverbs
+rdma_ucm</code></pre>
+<p>חבילות נדרשות לניסוי:</p>
+<ul>
+<li><p>sockperf</p></li>
+<li><p>vma</p></li>
+<li><p>cpufrequtils</p></li>
+<li><p>perftest</p></li>
+<li><p>libibverbs</p></li>
+<li><p>librdmacm</p></li>
+<li><p>librdmacm-dev</p></li>
+<li><p>cmake</p></li>
+</ul>
+</body>
+</html>
