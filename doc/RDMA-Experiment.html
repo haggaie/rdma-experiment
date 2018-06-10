@@ -160,12 +160,12 @@ client_ip=192.168.0.102</code></pre>
 <p>התוכנית משתמשת בספריות rdmacm ו-ibverbs המשמשות לתכנות RDMA. היא כוללת את האובייקטים הבאים:</p>
 <table style="width:99%;">
 <colgroup>
-<col width="12%" />
-<col width="86%" />
+<col width="14%" />
+<col width="85%" />
 </colgroup>
 <tbody>
 <tr class="odd">
-<td align="left">מזהה חיבור rdma_cm_id (ID)</td>
+<td align="left">מזהה חיבור <code>rdma_cm_id</code> (ID)‎</td>
 <td align="left">מזהה את החיבור עם הצד השני ברשת, ומאפשר לבצע מולו פעולות של שליחה וקבלה.</td>
 </tr>
 <tr class="even">
@@ -173,11 +173,11 @@ client_ip=192.168.0.102</code></pre>
 <td align="left">לכל ID יש תור שליחה הכולל הודעות לשליחה לצד השני (כולל פעולות גישה לזכרון מרוחק) ותור קבלה הכולל חוצצי זכרון המיועדים לקבלת הודעות.</td>
 </tr>
 <tr class="odd">
-<td align="left">זכרון רשום memory region (MR)</td>
+<td align="left">זכרון רשום memory region (MR)‎</td>
 <td align="left">כדי לאפשר לכרטיס הרשת גישה ישירה לזכרון, יש לרשום את הזכרון המבוקש מראש. לאחר הרישום מתקבל אוביקט MR המייצג את הזכרון הרשום.</td>
 </tr>
 <tr class="even">
-<td align="left">השלמת משימה work completion (WC)</td>
+<td align="left">השלמת משימה work completion (WC)‎</td>
 <td align="left">לאחר ביצוע פעולת שליחה או קבלה בהצלחה, מתווספים נתוני השלמת משימה לתור פנימי המשוייך ל-ID. התוכנית יכולה לקרוא את הנתונים מהתור וכך לזהות שהפעולה הושלמה. רק לאחר השלמת הפעולה וקבלת הנתונים מותר לתוכנית לעשות שימוש בזכרון המשוייך לפעולה.</td>
 </tr>
 </tbody>
