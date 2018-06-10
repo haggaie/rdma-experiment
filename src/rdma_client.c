@@ -66,6 +66,8 @@ int transmit_message(struct message *msg)
 		perror("rdma_get_send_comp");
 		return -1;
 	}
+
+	return 0;
 }
 
 int generate_request()
