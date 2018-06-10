@@ -192,8 +192,8 @@ RDMA](https://www.mellanox.com/related-docs/prod_software/RDMA_Aware_Programming
     ls /sys/class/infiniband_verbs/uverbs0/device/net/
 
 אלו שני פורטים של כרטיס רשת יחד התומך ב-RDMA. רק אחד מהם מחובר לשרת
-השני. מצאו את הפורט המחובר באמצעות הסתכלות בפלט של ip link show – הפורט
-המחובר יסומן עם הדגל UP, ואילו המנותק יופיע עם הדגל NO-CARRIER.
+השני. מצאו את הפורט המחובר באמצעות הסתכלות בפלט של `ip link show` – הפורט
+המנותק יופיע עם הדגל `NO-CARRIER`.
 
 במכונות של הניסוי יופיע הכרטיס כ-eth2.
 
