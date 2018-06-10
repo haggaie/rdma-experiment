@@ -1,5 +1,7 @@
 # RDMA experiment
 
+See the [experiment instructions](http://htmlpreview.github.io/?https://github.com/haggaie/rdma-experiment/blob/master/doc/RDMA-Experiment.html) (Hebrew).
+
 ## VM installation instructions
 
 You will need the following tools:
