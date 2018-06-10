@@ -1,9 +1,28 @@
 body {
 	direction: rtl;
+	margin: 1cm;
+}
+
+code {
+  margin: 0;
+  font-size: 100%;
+  background-color: rgba(27,31,35,0.05);
+  border-radius: 3px;
 }
 
 pre {
-	direction: ltr;
+  direction: ltr;
+  word-wrap: normal;
+  background-color: rgba(27,31,35,0.05);
+}
+
+pre>code {
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  border: 0;
 }
 
 kbd {
@@ -19,3 +38,30 @@ kbd {
   border-radius: 3px;
   box-shadow: inset 0 -1px 0 #959da5;
 }
+
+table {
+  display: block;
+  width: 100%;
+  overflow: auto;
+}
+
+table th {
+  font-weight: 600;
+}
+
+table th,
+table td {
+  padding: 6px 13px;
+  border: 1px solid #dfe2e5;
+  text-align: right;
+}
+
+table tr {
+  background-color: #fff;
+  border-top: 1px solid #c6cbd1;
+}
+
+table tr:nth-child(2n) {
+  background-color: #e4e4e4;
+}
+
