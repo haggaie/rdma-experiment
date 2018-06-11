@@ -33,5 +33,9 @@ rdma_ucm</code></pre>
 <li><p>librdmacm-dev</p></li>
 <li><p>cmake</p></li>
 </ul>
+<h3 id="huge-pages">Huge pages</h3>
+<p>Set up huge pages for VMA, by setting the file <code>/etc/sysctl.d/99-hugepages.conf</code> to:</p>
+<pre><code>kernel.shmmax = 1000000000
+vm.nr_hugepages = 800</code></pre>
 </body>
 </html>

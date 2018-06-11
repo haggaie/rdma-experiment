@@ -42,4 +42,10 @@
 
 -   cmake
 
+### Huge pages
+
+Set up huge pages for VMA, by setting the file `/etc/sysctl.d/99-hugepages.conf` to:
+
+    kernel.shmmax = 1000000000
+    vm.nr_hugepages = 800
 
