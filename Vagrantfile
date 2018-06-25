@@ -71,9 +71,9 @@ Vagrant.configure("2") do |config|
 
   # Two VMs: client & server
   config.vm.define "client" do |client|
-    config.vm.network "private_network", ip: "172.18.0.10"
+    client.vm.network "private_network", ip: "172.18.0.10"
   end
   config.vm.define "server" do |server|
-    config.vm.network "private_network", ip: "172.18.0.11"
+    server.vm.network "private_network", ip: "172.18.0.11"
   end
 end
