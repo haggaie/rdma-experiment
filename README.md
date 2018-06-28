@@ -7,7 +7,7 @@ See the [experiment instructions](http://htmlpreview.github.io/?https://github.c
 You will need the following tools:
 
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) - a desktop virtualization system.
-* [Vagrant](https://www.virtualbox.org/wiki/Downloads) - a scripted tool for managing virtual machines.
+* [Vagrant](https://www.vagrantup.com/downloads.html) - a scripted tool for managing virtual machines.
 
 To create the virtual machines use:
 
