@@ -42,6 +42,8 @@
 
 -   cmake
 
+-   hwloc
+
 ### Huge pages
 
 Set up huge pages for VMA, by setting the file `/etc/sysctl.d/99-hugepages.conf` to:
