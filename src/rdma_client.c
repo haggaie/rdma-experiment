@@ -70,6 +70,52 @@ int transmit_message(struct message *msg)
 	return 0;
 }
 
+int handle_response()
+{
+	struct ibv_wc wc;
+	int ret;
+
+	while ((ret = rdma_get_recv_comp(id, &wc)) == 0);
+	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
+		perror("rdma_get_recv_comp");
+		return -1;
+	}
+
+	struct message *msg = &recv_msg[wc.wr_id];
+	switch (msg->type) {
+	case MSG_QUERY_RESP:
+		LOG("Got query response: key=%d, value=%d\n", msg->key,
+		       msg->value);
+		break;
+	case MSG_SET_RESP:
+		LOG("Got set response: key=%d, value=%d\n", msg->key,
+		       msg->value);
+		break;
+	case MSG_EXCHANGE_DATABASE_INFO:
+		db_info = msg->db_info;
+		break;
+	default:
+		printf("Got unknown type: %d\n", msg->type);
+		return -1;
+	}
+
+	ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &recv_msg[wc.wr_id], sizeof(struct message), mr);
+	if (ret) {
+		perror("rdma_post_recv");
+		return -1;
+	}
+
+	return 0;
+}
+
+int rpc(struct message *msg)
+{
+	if (transmit_message(msg))
+		return -1;
+
+	return handle_response();
+}
+
 enum interactive_menu_item {
 	MENU_DISCONNECT,
 	MENU_INTERACTIVE_SET,
@@ -144,52 +190,6 @@ int interactive_menu()
 	}
 
 	return 0;
-}
-
-int handle_response()
-{
-	struct ibv_wc wc;
-	int ret;
-
-	while ((ret = rdma_get_recv_comp(id, &wc)) == 0);
-	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
-		perror("rdma_get_recv_comp");
-		return -1;
-	}
-
-	struct message *msg = &recv_msg[wc.wr_id];
-	switch (msg->type) {
-	case MSG_QUERY_RESP:
-		LOG("Got query response: key=%d, value=%d\n", msg->key,
-		       msg->value);
-		break;
-	case MSG_SET_RESP:
-		LOG("Got set response: key=%d, value=%d\n", msg->key,
-		       msg->value);
-		break;
-	case MSG_EXCHANGE_DATABASE_INFO:
-		db_info = msg->db_info;
-		break;
-	default:
-		printf("Got unknown type: %d\n", msg->type);
-		return -1;
-	}
-
-	ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &recv_msg[wc.wr_id], sizeof(struct message), mr);
-	if (ret) {
-		perror("rdma_post_recv");
-		return -1;
-	}
-
-	return 0;
-}
-
-int rpc(struct message *msg)
-{
-	if (transmit_message(msg))
-		return -1;
-
-	return handle_response();
 }
 
 void main_loop()
