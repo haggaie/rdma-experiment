@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 {
 	int op, ret;
 
-	while ((op = getopt(argc, argv, "p:i")) != -1) {
+	while ((op = getopt(argc, argv, "p:iq")) != -1) {
 		switch (op) {
 		case 'p':
 			port = optarg;
@@ -239,10 +239,14 @@ int main(int argc, char **argv)
 		case 'i':
 			send_flags = IBV_SEND_INLINE;
 			break;
+		case 'q':
+			enable_prints = false;
+			break;
 		default:
 			printf("usage: %s\n", argv[0]);
 			printf("\t[-p port_number]\n");
 			printf("\t[-i inline transmission]\n");
+			printf("\t[-q]\tQuiet mode - suppress response prints\n");
 			exit(1);
 		}
 	}
