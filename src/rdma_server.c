@@ -58,19 +58,19 @@ int handle_message(struct ibv_wc* wc)
 	case MSG_DISCONNECT:
 		return -1; /* Tell main loop to disconnect */
 	case MSG_SET:
-		printf("Got SET request with key %d and value %d\n",
+		LOG("Got SET request with key %d and value %d\n",
 		       msg->key, msg->value);
 		msg->type = MSG_SET_RESP;
 		if (set_key_value(msg->key, msg->value))
 			printf("Invalid key: %d\n", msg->key);
 		break;
 	case MSG_QUERY:
-		printf("Got QUERY request with key %d\n",
+		LOG("Got QUERY request with key %d\n",
 		       msg->key);
 		msg->type = MSG_QUERY_RESP;
 		if (query_key(msg->key, &msg->value))
 			printf("Invalid key: %d\n", msg->key);
-		printf("Returning query response with value: %d\n", msg->value);
+		LOG("Returning query response with value: %d\n", msg->value);
 		break;
 	case MSG_EXCHANGE_DATABASE_INFO:
 		msg->db_info.rkey = database_mr->rkey;

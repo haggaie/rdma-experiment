@@ -18,3 +18,6 @@ int post_recv_all(struct rdma_cm_id *id, struct ibv_mr *mr,
 
 	return 0;
 }
+
+bool enable_prints = true;
+

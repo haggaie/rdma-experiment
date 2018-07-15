@@ -4,6 +4,7 @@
 #pragma once
 
 #include <sys/types.h>
+#include <stdbool.h>
 #include <rdma/rdma_cma.h>
 #include <rdma/rdma_verbs.h>
 
@@ -54,3 +55,12 @@ struct message
 
 int post_recv_all(struct rdma_cm_id *id, struct ibv_mr *mr,
 		  struct message *messages, size_t num_messages);
+
+/* Conditional printing macros */
+
+extern bool enable_prints;
+
+#define LOG(...) do { \
+	if (enable_prints) \
+		printf(__VA_ARGS__); \
+} while (0)

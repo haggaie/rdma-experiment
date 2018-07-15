@@ -123,11 +123,11 @@ int handle_response()
 	struct message *msg = &recv_msg[wc.wr_id];
 	switch (msg->type) {
 	case MSG_QUERY_RESP:
-		printf("Got query response: key=%d, value=%d\n", msg->key,
+		LOG("Got query response: key=%d, value=%d\n", msg->key,
 		       msg->value);
 		break;
 	case MSG_SET_RESP:
-		printf("Got set response: key=%d, value=%d\n", msg->key,
+		LOG("Got set response: key=%d, value=%d\n", msg->key,
 		       msg->value);
 		break;
 	case MSG_EXCHANGE_DATABASE_INFO:
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
 {
 	int op, ret;
 
-	while ((op = getopt(argc, argv, "s:p:i")) != -1) {
+	while ((op = getopt(argc, argv, "s:p:iq")) != -1) {
 		switch (op) {
 		case 's':
 			server = optarg;
@@ -258,11 +258,15 @@ int main(int argc, char **argv)
 		case 'i':
 			send_flags = IBV_SEND_INLINE;
 			break;
+		case 'q':
+			enable_prints = false;
+			break;
 		default:
 			printf("usage: %s\n", argv[0]);
 			printf("\t[-s server_address]\n");
 			printf("\t[-p port_number]\n");
 			printf("\t[-i inline transmission]\n");
+			printf("\t[-q]\tQuiet mode - suppress response prints\n");
 			exit(1);
 		}
 	}
