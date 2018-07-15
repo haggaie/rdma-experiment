@@ -148,7 +148,7 @@ static int run(void)
 	hints.ai_port_space = RDMA_PS_TCP;
 	ret = rdma_getaddrinfo(NULL, port, &hints, &res);
 	if (ret) {
-		printf("rdma_getaddrinfo: %s\n", gai_strerror(ret));
+		perror("rdma_getaddrinfo failed");
 		return ret;
 	}
 
