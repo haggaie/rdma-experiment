@@ -70,7 +70,13 @@ int transmit_message(struct message *msg)
 	return 0;
 }
 
-int generate_request()
+enum interactive_menu_item {
+	MENU_DISCONNECT,
+	MENU_INTERACTIVE_SET,
+	MENU_INTERACTIVE_QUERY,
+};
+
+int interactive_menu()
 {
 	struct ibv_wc wc;
 	int ret;
@@ -79,33 +85,64 @@ int generate_request()
 	       "  %d - disconnect and quit\n"
 	       "  %d - set key value pair\n"
 	       "  %d - query the value of a given key\n",
-	       MSG_DISCONNECT, MSG_SET, MSG_QUERY);
+	       MENU_DISCONNECT, MENU_INTERACTIVE_SET, MENU_INTERACTIVE_QUERY);
 
 	struct message *msg = &send_msg[0];
-	scanf("%d", &msg->type);
-	switch (msg->type) {
-	case MSG_DISCONNECT:
-		break;
-	case MSG_SET:
-	case MSG_QUERY:
-		printf("Enter key:\n");
-		scanf("%d", &msg->key);
-		if (msg->type == MSG_SET) {
-			printf("Enter value:\n");
-			scanf("%d", &msg->value);
-		}
-		break;
-	default:
-		printf("Unknown type: %d\n", msg->type);
-		return -1;
+	enum interactive_menu_item menu_item;
+
+	ret = scanf("%d", &menu_item);
+	if (ret <= 0) {
+		printf("Error parsing selection.\n");
+		scanf("%*s"); //clear the invalid character(s) from stdin
+		return 0;
 	}
 
-	if (transmit_message(msg))
+	switch (menu_item) {
+	case MENU_DISCONNECT:
+		msg->type = MSG_DISCONNECT;
+		transmit_message(msg);
+
+		/* Terminate the program after sending the disconnect message. */
 		return -1;
 
-	/* Terminate the program after sending the disconnect message. */
-	if (msg->type == MSG_DISCONNECT)
-		return -1;
+	case MENU_INTERACTIVE_SET:
+		msg->type = MSG_SET;
+
+		printf("Enter key:\n");
+		ret = scanf("%d", &msg->key);
+		if (ret <= 0) {
+			printf("Error parsing selection.\n");
+			return 0;
+		}
+
+		printf("Enter value:\n");
+		ret = scanf("%d", &msg->value);
+		if (ret <= 0) {
+			printf("Error parsing selection.\n");
+			return 0;
+		}
+
+		rpc(msg);
+		break;
+
+	case MENU_INTERACTIVE_QUERY:
+		msg->type = MSG_QUERY;
+
+		printf("Enter key:\n");
+		ret = scanf("%d", &msg->key);
+		if (ret <= 0) {
+			printf("Error parsing selection.\n");
+			return 0;
+		}
+
+		rpc(msg);
+		break;
+
+	default:
+		printf("Unknown selection: %d\n", menu_item);
+		return 0;
+	}
+
 	return 0;
 }
 
@@ -147,12 +184,18 @@ int handle_response()
 	return 0;
 }
 
+int rpc(struct message *msg)
+{
+	if (transmit_message(msg))
+		return -1;
+
+	return handle_response();
+}
+
 void main_loop()
 {
 	while (1) {
-		if (generate_request())
-			return;
-		if (handle_response())
+		if (interactive_menu())
 			return;
 	}
 }
