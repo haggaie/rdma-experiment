@@ -116,22 +116,38 @@ int rpc(struct message *msg)
 	return handle_response();
 }
 
+/* Read the given key from the remote array and return the resulting value.
+ * Returns 0 on success, -1 on failure. */
+int rdma_read(int key, int *value)
+{
+	// TODO: fill this function
+
+	printf("RDMA read not implemented yet.\n");
+	return -1;
+}
+
 enum interactive_menu_item {
 	MENU_DISCONNECT,
 	MENU_INTERACTIVE_SET,
 	MENU_INTERACTIVE_QUERY,
+	MENU_INTERACTIVE_RDMA_READ,
 };
 
 int interactive_menu()
 {
 	struct ibv_wc wc;
 	int ret;
+	int key, value;
 
 	printf("Enter next command:\n"
 	       "  %d - disconnect and quit\n"
 	       "  %d - set key value pair\n"
-	       "  %d - query the value of a given key\n",
-	       MENU_DISCONNECT, MENU_INTERACTIVE_SET, MENU_INTERACTIVE_QUERY);
+	       "  %d - query the value of a given key\n"
+	       "  %d - query using an RDMA Read operation\n",
+	       MENU_DISCONNECT,
+	       MENU_INTERACTIVE_SET,
+	       MENU_INTERACTIVE_QUERY,
+	       MENU_INTERACTIVE_RDMA_READ);
 
 	struct message *msg = &send_msg[0];
 	enum interactive_menu_item menu_item;
@@ -182,6 +198,19 @@ int interactive_menu()
 		}
 
 		rpc(msg);
+		break;
+
+	case MENU_INTERACTIVE_RDMA_READ:
+		printf("Enter key:\n");
+		ret = scanf("%d", &key);
+		if (ret <= 0) {
+			printf("Error parsing selection.\n");
+			return 0;
+		}
+
+		if (rdma_read(key, &value) < 0)
+			return 0;
+
 		break;
 
 	default:
