@@ -39,7 +39,7 @@
 #include "common.h"
 #include "database.h"
 
-static const char *port = "7471";
+static char *port = "7471";
 
 #define NUM_MESSAGES 16
 
