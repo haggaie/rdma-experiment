@@ -214,6 +214,7 @@ int interactive_menu()
 		if (rdma_read(key, &value) < 0)
 			return 0;
 
+		LOG("Got RDMA read response: key=%d, value=%d\n", key, value);
 		break;
 
 	default:
