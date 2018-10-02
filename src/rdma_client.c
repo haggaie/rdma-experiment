@@ -62,8 +62,11 @@ int transmit_message(struct message *msg)
 	}
 
 	while ((ret = rdma_get_send_comp(id, &wc)) == 0);
-	if (ret < 0 || wc.status != IBV_WC_SUCCESS) {
+	if (ret < 0) {
 		perror("rdma_get_send_comp");
+		return -1;
+	} else if (wc.status != IBV_WC_SUCCESS) {
+		printf("error: got send completion with status code: %d\n", wc.status);
 		return -1;
 	}
 
