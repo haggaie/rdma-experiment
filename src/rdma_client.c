@@ -152,7 +152,7 @@ int interactive_menu()
 	struct message *msg = &send_msg[0];
 	enum interactive_menu_item menu_item;
 
-	ret = scanf("%d", &menu_item);
+	ret = scanf("%d", (int *)&menu_item);
 	if (ret <= 0) {
 		printf("Error parsing selection.\n");
 		scanf("%*s"); //clear the invalid character(s) from stdin
