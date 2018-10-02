@@ -102,11 +102,11 @@ void main_loop()
 			return;
 		} else if (ret > 0) {
 			if (wc.status != IBV_WC_SUCCESS) {
-				printf("error: got recieve completion with status code: %d\n", wc.status);
+				printf("error: got receive completion with status code: %d\n", wc.status);
 				return;
 			}
 			if (wc.byte_len != sizeof(struct message)) {
-				printf("error: got recieve completion length not matching the expected message length.\n");
+				printf("error: got receive completion length not matching the expected message length.\n");
 				return;
 			}
 			/* Got a message */
