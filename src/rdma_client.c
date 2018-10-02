@@ -44,7 +44,7 @@ static char *port = "7471";
 #define NUM_MESSAGES 1
 
 static struct rdma_cm_id *id;
-static struct ibv_mr *mr, *send_mr;
+static struct ibv_mr *recv_mr, *send_mr;
 static int send_flags = 0;
 static struct message send_msg[NUM_MESSAGES];
 static struct message recv_msg[NUM_MESSAGES];
@@ -99,7 +99,7 @@ int handle_response()
 		return -1;
 	}
 
-	ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &recv_msg[wc.wr_id], sizeof(struct message), mr);
+	ret = rdma_post_recv(id, (void *)(uintptr_t)wc.wr_id, &recv_msg[wc.wr_id], sizeof(struct message), recv_mr);
 	if (ret) {
 		perror("rdma_post_recv");
 		return -1;
@@ -269,8 +269,8 @@ static int run(void)
 		goto out_free_addrinfo;
 	}
 
-	mr = rdma_reg_msgs(id, recv_msg, sizeof(recv_msg));
-	if (!mr) {
+	recv_mr = rdma_reg_msgs(id, recv_msg, sizeof(recv_msg));
+	if (!recv_mr) {
 		perror("rdma_reg_msgs for recv_msg");
 		ret = -1;
 		goto out_destroy_ep;
@@ -284,7 +284,7 @@ static int run(void)
 		}
 	}
 
-	ret = post_recv_all(id, mr, recv_msg, NUM_MESSAGES);
+	ret = post_recv_all(id, recv_mr, recv_msg, NUM_MESSAGES);
 	if (ret)
 		goto out_dereg_send;
 
@@ -306,7 +306,7 @@ out_dereg_send:
 	if ((send_flags & IBV_SEND_INLINE) == 0)
 		rdma_dereg_mr(send_mr);
 out_dereg_recv:
-	rdma_dereg_mr(mr);
+	rdma_dereg_mr(recv_mr);
 out_destroy_ep:
 	rdma_destroy_ep(id);
 out_free_addrinfo:
