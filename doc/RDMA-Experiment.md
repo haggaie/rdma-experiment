@@ -212,7 +212,8 @@ RDMA](https://www.mellanox.com/related-docs/prod_software/RDMA_Aware_Programming
 
 #### <a name="lstopo"> שאלה 1.2
 
-הציגו את מבנה המחשב עליו אתם עובדים באמצעות הפקודה `lstopo`.
+הציגו את מבנה המחשב עליו אתם עובדים באמצעות הפקודה `lstopo`. 
+הפקודה מציגה תרשים של רכיבי המחשב, כאשר מעבדים מוצגים כ-Packages, וליבות כ-Cores.
 כמה מעבדים יש במכונה? כמה ליבות יש במכונה? כמה חוטים?
 האם הזכרון מחובר בחיבור אחיד או בארכיטקטורת
 NUMA (Non-uniform memory architecture)&lrm;?
