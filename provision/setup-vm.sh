@@ -42,7 +42,7 @@ sudo apt-get install -y ibverbs-utils perftest
 # enable rxe
 #sudo rxe_cfg add enp0s8
 mkdir -p /var/lib/rxe
-echo enp0s8 > /var/lib/rxe/rxe
+ls /sys/class/net | grep -v '^lo$' > /var/lib/rxe/rxe
 sudo rxe_cfg start
 
 # sockperf - need to be pre-built or downloaded
