@@ -37,7 +37,7 @@ sudo sudo apt-get install -y kmod
 sudo sudo apt-get install -y rdma-core
 
 # Generic RDMA utilities
-sudo apt-get install -y ibverbs-utils perftest
+sudo apt-get install -y ibverbs-utils perftest rdmacm-utils
 
 # enable rxe
 #sudo rxe_cfg add enp0s8
