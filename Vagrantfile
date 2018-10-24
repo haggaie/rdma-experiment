@@ -68,12 +68,4 @@ Vagrant.configure("2") do |config|
   #   apt-get install -y apache2
   # SHELL
   config.vm.provision "shell", path: "provision/setup-vm.sh"
-
-  # Two VMs: client & server
-  config.vm.define "client" do |client|
-    client.vm.network "private_network", ip: "172.18.0.10"
-  end
-  config.vm.define "server" do |server|
-    server.vm.network "private_network", ip: "172.18.0.11"
-  end
 end
