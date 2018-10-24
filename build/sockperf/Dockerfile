@@ -14,6 +14,3 @@ RUN apt-get install -y rpm debhelper cpio
 RUN mkdir -p /tmp/build
 WORKDIR /tmp/build
 VOLUME /export
-
-COPY build.sh /
-ENTRYPOINT ["/build.sh"]
