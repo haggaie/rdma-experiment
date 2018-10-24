@@ -87,6 +87,11 @@
       {
         "output": "builds/{{.Provider}}-rdma-experiment.box",
         "type": "vagrant"
+      },
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "haggaie/rdma-experiment",
+        "version": "{{user `version`}}"
       }
     ]
   ]
