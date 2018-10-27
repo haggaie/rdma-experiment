@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "haggaie/rdma-experiment"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -67,13 +67,5 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
-  config.vm.provision "shell", path: "provision/setup-vm.sh"
-
-  # Two VMs: client & server
-  config.vm.define "client" do |client|
-    client.vm.network "private_network", ip: "172.18.0.10"
-  end
-  config.vm.define "server" do |server|
-    server.vm.network "private_network", ip: "172.18.0.11"
-  end
+  #config.vm.provision "shell", path: "provision/setup-vm.sh"
 end
