@@ -1,3 +1,3 @@
 #!/bin/bash
 
-packer build -var 'version=0.1.0' rdma-experiment.json
+packer build -var-file token.json rdma-experiment.json
