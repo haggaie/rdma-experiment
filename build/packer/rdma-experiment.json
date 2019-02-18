@@ -1,0 +1,45 @@
+{
+  "variables": {
+    "version": "0.1.{{timestamp}}",
+    "cloud_token": ""
+  },
+  "builders": [
+    {
+      "type": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "communicator": "ssh",
+      "source_path": "ubuntu/bionic64",
+      "add_force": true,
+      "provider": "virtualbox",
+      "box_name": "haggaie/rdma-experiment"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "scripts/rxe.service",
+      "destination": "/tmp/rxe.service"
+    },
+    {
+      "type": "file",
+      "source": "scripts/rxe_all.sh",
+      "destination": "/tmp/rxe_all.sh"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/setup-vm.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "haggaie/rdma-experiment",
+        "version": "{{user `version`}}",
+        "access_token": "{{user `cloud_token`}}",
+        "no_release": "true"
+      }
+    ]
+  ]
+}

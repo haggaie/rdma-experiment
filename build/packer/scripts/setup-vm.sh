@@ -40,10 +40,13 @@ sudo sudo apt-get install -y rdma-core
 sudo apt-get install -y ibverbs-utils perftest rdmacm-utils
 
 # enable rxe
-#sudo rxe_cfg add enp0s8
-mkdir -p /var/lib/rxe
-ls /sys/class/net | grep -v '^lo$' > /var/lib/rxe/rxe
-sudo rxe_cfg start
+echo rdma_rxe > /etc/modules-load.d/rxe.conf
+sudo mv /tmp/rxe_all.sh /usr/bin/
+chmod +x /usr/bin/rxe_all.sh
+sudo mv /tmp/rxe.service /etc/systemd/system/
+sudo chown root:root /usr/bin/rxe_all /etc/systemd/system/rxe.service
+sudo systemctl enable rxe.service
+echo rdma_rxe > /etc/modules-load.d/rxe.conf
 
 # sockperf - need to be pre-built or downloaded
 sudo apt-get install -y sockperf
