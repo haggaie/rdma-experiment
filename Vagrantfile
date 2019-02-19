@@ -56,7 +56,6 @@ Vagrant.configure("2") do |config|
   #   # Customize the amount of memory on the VM:
   #   vb.memory = "1024"
      # work-around issue in box generation that adds serial log file pointing to the build path
-     vb.customize [ "modifyvm", :id, "--uart1", "off" ]
      vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
   end
   #
