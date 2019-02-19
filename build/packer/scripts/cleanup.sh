@@ -6,20 +6,17 @@ DISK_USAGE_BEFORE_CLEANUP=$(df -h)
 # Make sure udev does not block our network - http://6.ptmc.org/?p=164
 echo "==> Cleaning up udev rules"
 rm -rf /dev/.udev/
-rm /lib/udev/rules.d/75-persistent-net-generator.rules
+#rm /lib/udev/rules.d/75-persistent-net-generator.rules
 
 echo "==> Cleaning up leftover dhcp leases"
 # Ubuntu 10.04
 if [ -d "/var/lib/dhcp3" ]; then
-    rm /var/lib/dhcp3/*
+    rm -f /var/lib/dhcp3/*
 fi
 # Ubuntu 12.04 & 14.04
 if [ -d "/var/lib/dhcp" ]; then
-    rm /var/lib/dhcp/*
+    rm -f /var/lib/dhcp/*
 fi
-
-# Add delay to prevent "vagrant reload" from failing
-echo "pre-up sleep 2" >> /etc/network/interfaces
 
 echo "==> Cleaning up tmp"
 rm -rf /tmp/*

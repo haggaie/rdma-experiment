@@ -28,7 +28,11 @@
     },
     {
       "type": "shell",
-      "script": "scripts/setup-vm.sh"
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "scripts/setup-vm.sh",
+        "scripts/cleanup.sh"
+      ]
     }
   ],
   "post-processors": [
