@@ -49,13 +49,16 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
+  config.vm.provider "virtualbox" do |vb|
   #   # Display the VirtualBox GUI when booting the machine
   #   vb.gui = true
   #
   #   # Customize the amount of memory on the VM:
   #   vb.memory = "1024"
-  # end
+     # work-around issue in box generation that adds serial log file pointing to the build path
+     vb.customize [ "modifyvm", :id, "--uart1", "off" ]
+     vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
