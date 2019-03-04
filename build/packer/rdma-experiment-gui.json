@@ -1,0 +1,39 @@
+{
+  "variables": {
+    "version": "0.1.{{timestamp}}",
+    "cloud_token": ""
+  },
+  "builders": [
+    {
+      "type": "vagrant",
+      "ssh_port": 22,
+      "ssh_username": "vagrant",
+      "communicator": "ssh",
+      "source_path": "haggaie/rdma-experiment",
+      "add_force": true,
+      "provider": "virtualbox",
+      "box_name": "haggaie/rdma-experiment-gui"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "scripts/setup-gui.sh",
+        "scripts/cleanup.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant-cloud",
+        "box_tag": "haggaie/rdma-experiment-gui",
+        "version": "{{user `version`}}",
+        "access_token": "{{user `cloud_token`}}",
+        "no_release": "true"
+      }
+    ]
+  ]
+}
