@@ -22,11 +22,9 @@ To create the virtual machines use:
 
     vagrant up
 
-After the first time, a new kernel is installed and the VMs have to be restarted and reprovisioned using:
-
-    vagrant halt && vagrant up --provision
-
 This will create a virtual machine with the SoftRoCE RDMA driver enabled on its virtual network interface. To access
 the machine, use:
 
     vagrant ssh
+
+The repository files should be available inside the VM under the `/vagrant` directory.
