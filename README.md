@@ -28,3 +28,5 @@ the machine, use:
     vagrant ssh
 
 The repository files should be available inside the VM under the `/vagrant` directory.
+
+RDMA functionality should be available on the VM's Ethernet interface, which vagrant normally configures with the IP address 10.0.2.15.
