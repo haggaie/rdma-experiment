@@ -1,6 +1,6 @@
 {
   "variables": {
-    "version": "0.1.{{timestamp}}",
+    "version": "0.2.{{timestamp}}",
     "cloud_token": ""
   },
   "builders": [
