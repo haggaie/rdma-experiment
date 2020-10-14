@@ -56,8 +56,7 @@ Vagrant.configure("2") do |config|
   #   # Customize the amount of memory on the VM:
   #   vb.memory = "1024"
      # work-around issue in box generation that adds serial log file pointing to the build path
-     # https://git.launchpad.net/livecd-rootfs/tree/live-build/ubuntu-cpc/hooks/042-vagrant.binary?h=ubuntu/bionic
-     vb.customize [ "modifyvm", :id, "--uartmode1", "file", File.join(Dir.pwd, "console.log") ]
+     vb.customize [ "modifyvm", :id, "--uartmode1", "disconnected" ]
   end
   #
   # View the documentation for the provider you are using for more
