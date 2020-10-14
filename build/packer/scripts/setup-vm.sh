@@ -4,9 +4,6 @@
 
 apt-get update
 
-# install ifupdown for Vagrant
-apt-get install -y ifupdown
-
 # The RDMA stack and SoftRoCE require the generic kernel (not virtual kernel)
 apt-get install -y linux-generic
 apt-get autoremove -y --purge linux-virtual
