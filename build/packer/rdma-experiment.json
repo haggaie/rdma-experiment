@@ -6,8 +6,6 @@
   "builders": [
     {
       "type": "vagrant",
-      "ssh_port": 22,
-      "ssh_username": "vagrant",
       "communicator": "ssh",
       "source_path": "ubuntu/focal64",
       "add_force": true,
