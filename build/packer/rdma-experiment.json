@@ -1,6 +1,6 @@
 {
   "variables": {
-    "version": "0.2.{{timestamp}}",
+    "version": "0.3.{{timestamp}}",
     "cloud_token": ""
   },
   "builders": [
@@ -10,7 +10,8 @@
       "source_path": "ubuntu/focal64",
       "add_force": true,
       "provider": "virtualbox",
-      "box_name": "haggaie/rdma-experiment"
+      "box_name": "haggaie/rdma-experiment",
+      "output_vagrantfile": "Vagrantfile"
     }
   ],
   "provisioners": [
